@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BotFlow — منصة بوتات واتساب للشركات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060a0f;
+  --wa: #25D366;
+  --wa2: #128C7E;
+  --accent: #00e5ff;
+  --gold: #f5c842;
+  --text: #f0f4f8;
+  --dim: #64748b;
+  --card: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
+  --font: 'Cairo', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ── NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 20px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(6,10,15,0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--text);
+}
+.nav-logo .dot { color: var(--wa); }
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--dim);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+  background: var(--wa);
+  color: #060a0f !important;
+  padding: 9px 22px;
+  border-radius: 8px;
+  font-weight: 700 !important;
+  transition: all 0.2s !important;
+}
+.nav-cta:hover { background: var(--wa2) !important; color: white !important; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative;
+}
+
+/* خلفية متحركة */
+.hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: pulse 4s ease-in-out infinite alternate;
+}
+.glow-1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(37,211,102,0.15), transparent);
+  top: 20%; right: 10%;
+}
+.glow-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,229,255,0.08), transparent);
+  bottom: 20%; left: 10%;
+  animation-delay: 2s;
+}
+@keyframes pulse {
+  from { opacity: 0.5; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1.05); }
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(37,211,102,0.1);
+  border: 1px solid rgba(37,211,102,0.25);
+  color: var(--wa);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 28px;
+  letter-spacing: 1px;
+  animation: fadeDown 0.6s ease both;
+}
+.badge-dot {
+  width: 6px; height: 6px;
+  background: var(--wa);
+  border-radius: 50%;
+  animation: blink 1.5s ease infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.hero h1 {
+  font-size: clamp(38px, 7vw, 80px);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 24px;
+  max-width: 900px;
+  animation: fadeDown 0.7s ease 0.1s both;
+}
+.hero h1 .green { color: var(--wa); }
+.hero h1 .outline {
+  -webkit-text-stroke: 1px rgba(255,255,255,0.3);
+  color: transparent;
+}
+
+.hero-sub {
+  font-size: 18px;
+  color: var(--dim);
+  max-width: 600px;
+  line-height: 1.7;
+  margin-bottom: 40px;
+  font-weight: 400;
+  animation: fadeDown 0.7s ease 0.2s both;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeDown 0.7s ease 0.3s both;
+}
+.btn-big {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 30px;
+  border-radius: 10px;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: none;
+}
+.btn-wa {
+  background: var(--wa);
+  color: #060a0f;
+}
+.btn-wa:hover { background: #1db954; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37,211,102,0.3); }
+.btn-ghost {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+
+/* Stats strip */
+.hero-stats {
+  display: flex;
+  gap: 48px;
+  justify-content: center;
+  margin-top: 64px;
+  flex-wrap: wrap;
+  animation: fadeDown 0.7s ease 0.4s both;
+}
+.hero-stat {
+  text-align: center;
+}
+.stat-num {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--wa);
+  font-family: var(--mono);
+  line-height: 1;
+}
+.stat-txt {
+  font-size: 12px;
+  color: var(--dim);
+  margin-top: 4px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* Scroll indicator */
+.scroll-hint {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--dim);
+  font-size: 11px;
+  letter-spacing: 2px;
+  animation: bounce 2s ease infinite;
+}
+.scroll-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, var(--wa), transparent);
+}
+@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HOW IT WORKS ── */
+section { position: relative; z-index: 1; }
+
+.section-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--wa);
+  margin-bottom: 12px;
+  display: block;
+}
+.section-title {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.section-sub {
+  color: var(--dim);
+  font-size: 16px;
+  max-width: 520px;
+  line-height: 1.7;
+}
+
+.how-section {
+  padding: 100px 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.how-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  margin-top: 60px;
+}
+.how-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.how-step {
+  display: flex;
+  gap: 20px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.how-step:last-child { border-bottom: none; }
+.how-step:hover .step-num-big { color: var(--wa); }
+.step-num-big {
+  font-family: var(--mono);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--border);
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.2s;
+  width: 48px;
+}
+.step-info h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.step-info p {
+  font-size: 13px;
+  color: var(--dim);
+  line-height: 1.6;
+}
+
+/* Phone mockup */
+.phone-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.phone {
+  width: 280px;
+  background: #1a1a2e;
+  border-radius: 40px;
+  padding: 16px;
+  border: 2px solid rgba(255,255,255,0.1);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+  position: relative;
+}
+.phone-notch {
+  width: 80px; height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  margin: 0 auto 12px;
+}
+.phone-screen {
+  background: #e5ddd5;
+  border-radius: 28px;
+  padding: 16px;
+  min-height: 420px;
+}
+.wa-header {
+  background: var(--wa2);
+  margin: -16px -16px 12px;
+  padding: 10px 14px;
+  border-radius: 28px 28px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+}
+.wa-dot { width: 8px; height: 8px; background: #25D366; border-radius: 50%; }
+.msg { margin-bottom: 8px; }
+.msg.bot { display: flex; justify-content: flex-start; }
+.msg.user { display: flex; justify-content: flex-end; }
+.bubble {
+  max-width: 80%;
+  padding: 8px 11px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #1a1a1a;
+}
+.msg.bot .bubble { background: white; border-radius: 0 8px 8px 8px; }
+.msg.user .bubble { background: #dcf8c6; border-radius: 8px 0 8px 8px; }
+.typing {
+  display: flex;
+  gap: 4px;
+  padding: 10px 14px;
+  background: white;
+  border-radius: 0 8px 8px 8px;
+  width: fit-content;
+  margin-bottom: 8px;
+}
+.typing span {
+  width: 6px; height: 6px;
+  background: #999;
+  border-radius: 50%;
+  animation: typingDot 1.2s ease infinite;
+}
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingDot { 0%,80%,100%{transform:scale(1);opacity:0.4} 40%{transform:scale(1.2);opacity:1} }
+
+/* ── FEATURES ── */
+.features-section {
+  padding: 100px 48px;
+  background: rgba(255,255,255,0.015);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.features-inner { max-width: 1100px; margin: 0 auto; }
+.features-header { text-align: center; margin-bottom: 60px; }
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.feat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.feat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(37,211,102,0.4), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.feat-card:hover { border-color: rgba(37,211,102,0.2); transform: translateY(-4px); }
+.feat-card:hover::before { opacity: 1; }
+.feat-icon { font-size: 32px; margin-bottom: 16px; display: block; }
+.feat-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.feat-desc { font-size: 13px; color: var(--dim); line-height: 1.6; }
+
+/* ── PRICING ── */
+.pricing-section {
+  padding: 100px 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.pricing-header { text-align: center; margin-bottom: 60px; }
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.price-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  position: relative;
+  transition: all 0.25s;
+}
+.price-card:hover { transform: translateY(-4px); }
+.price-card.featured {
+  border-color: var(--wa);
+  background: linear-gradient(135deg, rgba(37,211,102,0.08), rgba(6,10,15,0.8));
+  transform: scale(1.03);
+}
+.price-card.featured:hover { transform: scale(1.03) translateY(-4px); }
+.popular-tag {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--wa);
+  color: #060a0f;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 16px;
+  border-radius: 20px;
+  white-space: nowrap;
+  letter-spacing: 1px;
+}
+.price-plan { font-size: 12px; font-weight: 700; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; font-family: var(--mono); }
+.price-amount { font-size: 48px; font-weight: 900; color: var(--wa); font-family: var(--mono); line-height: 1; }
+.price-period { font-size: 13px; color: var(--dim); margin-bottom: 28px; margin-top: 4px; }
+.price-features { list-style: none; margin-bottom: 28px; }
+.price-features li {
+  padding: 9px 0;
+  font-size: 13px;
+  color: var(--dim);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.price-features li:last-child { border-bottom: none; }
+.price-features li.yes { color: var(--text); }
+.price-features li.yes::before { content: '✓'; color: var(--wa); font-weight: 700; flex-shrink: 0; }
+.price-features li.no::before { content: '✗'; color: var(--dim); flex-shrink: 0; }
+.price-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+.price-btn-wa { background: var(--wa); color: #060a0f; }
+.price-btn-wa:hover { background: #1db954; }
+.price-btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+.price-btn-ghost:hover { border-color: var(--wa); color: var(--wa); }
+
+/* ── SIGNUP FORM ── */
+.signup-section {
+  padding: 100px 48px;
+  background: rgba(37,211,102,0.04);
+  border-top: 1px solid rgba(37,211,102,0.15);
+}
+.signup-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+.signup-form {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; text-align: right; }
+.form-label { font-size: 12px; font-weight: 700; color: var(--dim); letter-spacing: 0.5px; }
+.form-input, .form-select {
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.form-input:focus, .form-select:focus { border-color: var(--wa); }
+.form-input::placeholder { color: var(--dim); }
+.form-select option { background: #1a1a2e; color: var(--text); }
+.submit-btn {
+  background: var(--wa);
+  color: #060a0f;
+  border: none;
+  border-radius: 10px;
+  padding: 16px;
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.submit-btn:hover { background: #1db954; transform: translateY(-2px); box-shadow: 0 12px 32px rgba(37,211,102,0.3); }
+.form-note { font-size: 12px; color: var(--dim); margin-top: 8px; }
+
+/* SUCCESS STATE */
+.success-msg {
+  display: none;
+  background: rgba(37,211,102,0.1);
+  border: 1px solid rgba(37,211,102,0.3);
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+}
+.success-msg h3 { font-size: 22px; font-weight: 700; color: var(--wa); margin-bottom: 8px; }
+.success-msg p { color: var(--dim); font-size: 14px; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 40px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-logo { font-size: 18px; font-weight: 900; }
+.footer-logo span { color: var(--wa); }
+.footer-copy { font-size: 12px; color: var(--dim); font-family: var(--mono); }
+.footer-links { display: flex; gap: 20px; }
+.footer-links a { font-size: 12px; color: var(--dim); text-decoration: none; }
+.footer-links a:hover { color: var(--wa); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .how-section, .pricing-section, .signup-section, .features-section { padding: 60px 20px; }
+  .how-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .price-card.featured { transform: none; }
+  .form-row { grid-template-columns: 1fr; }
+  .hero-stats { gap: 24px; }
+  footer { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Bot<span class="dot">Flow</span> ●</div>
+  <ul class="nav-links">
+    <li><a href="#how">كيف يعمل</a></li>
+    <li><a href="#features">المميزات</a></li>
+    <li><a href="#pricing">الأسعار</a></li>
+    <li><a href="#signup" class="nav-cta">ابدأ الآن</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow glow-1"></div>
+  <div class="hero-glow glow-2"></div>
+
+  <div class="hero-badge">
+    <div class="badge-dot"></div>
+    منصة بوتات واتساب متعددة الشركاء
+  </div>
+
+  <h1>
+    بوت واتساب مخصص<br>
+    <span class="green">لكل شريك</span>
+    <span class="outline"> تلقائياً</span>
+  </h1>
+
+  <p class="hero-sub">
+    منصة SaaS تمكنك من بيع بوتات واتساب مخصصة لكل عميل — تأمين، مختبرات، سيارات، عقارات.
+    كل شريك يحصل على تجربة منفصلة بالكامل من رابط واحد.
+  </p>
+
+  <div class="hero-btns">
+    <a href="#signup" class="btn-big btn-wa">🚀 ابدأ مجاناً</a>
+    <a href="#how" class="btn-big btn-ghost">🎬 كيف يعمل؟</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="stat-num">10+</div>
+      <div class="stat-txt">أنواع Flows</div>
+    </div>
+    <div class="hero-stat">
+      <div class="stat-num">68%</div>
+      <div class="stat-txt">معدل إتمام</div>
+    </div>
+    <div class="hero-stat">
+      <div class="stat-num">3 أيام</div>
+      <div class="stat-txt">للإطلاق</div>
+    </div>
+    <div class="hero-stat">
+      <div class="stat-num">90%</div>
+      <div class="stat-txt">هامش ربح</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    SCROLL
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="how-section">
+    <span class="section-tag">كيف يعمل النظام</span>
+    <h2 class="section-title">رابط واحد → تجربة كاملة مخصصة</h2>
+    <p class="section-sub">كل شريك يحصل على رابط واتساب فريد. يضغط عليه عميله، والبوت يتعرف عليه فوراً ويعرض فقط خدمات ذلك الشريك.</p>
+
+    <div class="how-grid">
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="step-num-big">01</div>
+          <div class="step-info">
+            <h3>أضف شريكاً في ثوانٍ</h3>
+            <p>عبر لوحة التحكم أو API، أنشئ شريكاً جديداً واختر نوع الـ Flow المناسب له.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num-big">02</div>
+          <div class="step-info">
+            <h3>احصل على رابط + QR Code</h3>
+            <p>النظام يولد رابطاً فريداً وQR code جاهزاً للطباعة أو المشاركة فوراً.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num-big">03</div>
+          <div class="step-info">
+            <h3>العميل يضغط → البوت يتعرف عليه</h3>
+            <p>المستخدم يفتح الرابط مرة واحدة. البوت يحفظ مصدره ويوجهه للخدمة الصحيحة تلقائياً إلى الأبد.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num-big">04</div>
+          <div class="step-info">
+            <h3>الطلب يصل للشريك مباشرة</h3>
+            <p>عند إتمام المحادثة، يُرسَل الـ lead فوراً للشريك عبر Webhook أو إيميل.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone mockup -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="wa-header">
+              <div class="wa-dot"></div>
+              شركة الحياة للتأمين
+            </div>
+            <div class="msg bot">
+              <div class="bubble">👋 أهلاً! اختر نوع التأمين:<br><br>🚗 سيارة<br>💊 صحي<br>🏠 منزل</div>
+            </div>
+            <div class="msg user">
+              <div class="bubble">سيارة</div>
+            </div>
+            <div class="msg bot">
+              <div class="bubble">ما ماركة وموديل سيارتك؟</div>
+            </div>
+            <div class="msg user">
+              <div class="bubble">تويوتا كامري 2023</div>
+            </div>
+            <div class="typing">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="features-section">
+  <div class="features-inner">
+    <div class="features-header">
+      <span class="section-tag">المميزات</span>
+      <h2 class="section-title">كل ما تحتاجه<br>في مكان واحد</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card">
+        <span class="feat-icon">🔀</span>
+        <div class="feat-title">توجيه تلقائي بالـ Tag</div>
+        <div class="feat-desc">كل مستخدم يُوجَّه فوراً لـ Flow شريكه بناءً على الرابط الذي استخدمه — بدون أي تدخل يدوي.</div>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">🧩</span>
+        <div class="feat-title">Flows قابلة للتخصيص</div>
+        <div class="feat-desc">أضف شريكاً جديداً وخصص Flow كامل له عبر JSONB config — بدون نشر كود جديد.</div>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">📊</span>
+        <div class="feat-title">تحليلات لكل شريك</div>
+        <div class="feat-desc">إحصائيات يومية: محادثات، عملاء جدد، معدل الإتمام، والطلبات. كل شريك له داشبورد منفصل.</div>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">🔌</span>
+        <div class="feat-title">Webhook إلى الشريك</div>
+        <div class="feat-desc">كل طلب مكتمل يُرسَل فوراً لنظام الشريك عبر API أو إيميل — تكامل سلس مع أي CRM.</div>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">📱</span>
+        <div class="feat-title">QR Code تلقائي</div>
+        <div class="feat-desc">كل شريك يحصل على QR Code جاهز للطباعة على الفور — مثالي للمطبوعات وواجهات المحلات.</div>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">🔐</span>
+        <div class="feat-title">API كامل + مفاتيح</div>
+        <div class="feat-desc">API RESTful لإدارة الشركاء، الجلسات، والتقارير — للمطورين الذين يريدون تحكماً كاملاً.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="pricing-section">
+    <div class="pricing-header">
+      <span class="section-tag">الأسعار</span>
+      <h2 class="section-title">ادفع لكل شريك<br>وليس للنظام</h2>
+      <p class="section-sub" style="margin:12px auto 0;text-align:center;">كل شريك له اشتراك مستقل. كلما زاد عدد شركائك، زاد ربحك.</p>
+    </div>
+    <div class="pricing-grid">
+
+      <div class="price-card">
+        <div class="price-plan">Starter</div>
+        <div class="price-amount">$99</div>
+        <div class="price-period">لكل شريك / شهرياً</div>
+        <ul class="price-features">
+          <li class="yes">Flow واحد مخصص</li>
+          <li class="yes">500 مستخدم/شهر</li>
+          <li class="yes">رابط + QR Code</li>
+          <li class="yes">تقارير أساسية</li>
+          <li class="no">Webhook للشريك</li>
+          <li class="no">Broadcast</li>
+        </ul>
+        <button class="price-btn price-btn-ghost" onclick="selectPlan('Starter', 99)">اختر Starter</button>
+      </div>
+
+      <div class="price-card featured">
+        <div class="popular-tag">⭐ الأكثر طلباً</div>
+        <div class="price-plan">Growth</div>
+        <div class="price-amount">$299</div>
+        <div class="price-period">لكل شريك / شهرياً</div>
+        <ul class="price-features">
+          <li class="yes">3 Flows متخصصة</li>
+          <li class="yes">2,000 مستخدم/شهر</li>
+          <li class="yes">رابط + QR Code</li>
+          <li class="yes">تحليلات متقدمة</li>
+          <li class="yes">Webhook للشريك</li>
+          <li class="yes">حملات Broadcast</li>
+        </ul>
+        <button class="price-btn price-btn-wa" onclick="selectPlan('Growth', 299)">ابدأ مع Growth</button>
+      </div>
+
+      <div class="price-card">
+        <div class="price-plan">Enterprise</div>
+        <div class="price-amount">$799+</div>
+        <div class="price-period">مخصص / شهرياً</div>
+        <ul class="price-features">
+          <li class="yes">Flows غير محدودة</li>
+          <li class="yes">مستخدمون غير محدودون</li>
+          <li class="yes">رقم واتساب مخصص</li>
+          <li class="yes">API كامل</li>
+          <li class="yes">تكامل CRM</li>
+          <li class="yes">SLA + دعم أولوية</li>
+        </ul>
+        <button class="price-btn price-btn-ghost" onclick="selectPlan('Enterprise', 799)">تواصل معنا</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SIGNUP -->
+<section id="signup" class="signup-section">
+  <div class="signup-inner">
+    <span class="section-tag">ابدأ الآن</span>
+    <h2 class="section-title">جهّز منصتك في 3 أيام</h2>
+    <p class="section-sub" style="margin: 0 auto;">سجّل بياناتك وسيتواصل معك فريقنا خلال 24 ساعة لبدء الإعداد.</p>
+
+    <div class="signup-form" id="signup-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">اسمك الكامل *</label>
+          <input class="form-input" id="f-name" type="text" placeholder="أحمد العمري" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">البريد الإلكتروني *</label>
+          <input class="form-input" id="f-email" type="email" placeholder="ahmed@company.com" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">رقم الواتساب *</label>
+          <input class="form-input" id="f-phone" type="tel" placeholder="+966501234567" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">الباقة المطلوبة</label>
+          <select class="form-select" id="f-plan">
+            <option value="starter">Starter — $99/شريك</option>
+            <option value="growth" selected>Growth — $299/شريك</option>
+            <option value="enterprise">Enterprise — تواصل معنا</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">نوع عملك / قطاعك</label>
+        <select class="form-select" id="f-sector">
+          <option>تأمين</option>
+          <option>مختبرات طبية</option>
+          <option>تأجير سيارات</option>
+          <option>عقارات</option>
+          <option>وكالة تسويق</option>
+          <option>أخرى</option>
+        </select>
+      </div>
+      <button class="submit-btn" onclick="submitForm()">
+        🚀 أرسل طلب التسجيل
+      </button>
+      <p class="form-note">✅ لا يوجد التزام — سنتواصل معك خلال 24 ساعة</p>
+    </div>
+
+    <div class="success-msg" id="success-msg">
+      <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+      <h3>تم استلام طلبك!</h3>
+      <p>سيتواصل معك فريقنا على واتساب خلال 24 ساعة.<br>استعد لإطلاق منصتك! 🚀</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Bot<span>Flow</span> ●</div>
+  <div class="footer-copy">© 2025 BotFlow Platform — جميع الحقوق محفوظة</div>
+  <div class="footer-links">
+    <a href="#">الشروط</a>
+    <a href="#">الخصوصية</a>
+    <a href="#">الدعم</a>
+  </div>
+</footer>
+
+<script>
+function selectPlan(name, price) {
+  document.getElementById('f-plan').value = name.toLowerCase();
+  document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
+}
+
+function submitForm() {
+  const name  = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+
+  if (!name || !email || !phone) {
+    alert('يرجى ملء جميع الحقول المطلوبة *');
+    return;
+  }
+
+  const plan   = document.getElementById('f-plan').value;
+  const sector = document.getElementById('f-sector').value;
+
+  // في الإنتاج: أرسل لـ API الخاص بك
+  console.log('New signup:', { name, email, phone, plan, sector });
+
+  // اعرض رسالة النجاح
+  document.getElementById('signup-form').style.display = 'none';
+  document.getElementById('success-msg').style.display = 'block';
+
+  // يمكنك إرسال البيانات لـ Google Sheets أو Airtable أو API
+  // fetch('/api/signups', { method:'POST', body: JSON.stringify({name,email,phone,plan,sector}), headers:{'Content-Type':'application/json'} });
+}
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>

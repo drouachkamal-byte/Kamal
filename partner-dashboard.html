@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BotFlow — داشبورد الشريك</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f4f8;
+  --sidebar: #0f1923;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --wa: #25D366;
+  --wa-dark: #128C7E;
+  --accent: #0057ff;
+  --orange: #ff6b2b;
+  --red: #ef4444;
+  --yellow: #f59e0b;
+  --text: #0f1923;
+  --mid: #4a5568;
+  --dim: #94a3b8;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+  --font: 'Cairo', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px; background: var(--sidebar);
+  min-height: 100vh; position: fixed;
+  right: 0; top: 0; bottom: 0;
+  display: flex; flex-direction: column;
+  z-index: 50;
+}
+.logo {
+  padding: 22px 18px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-icon { width: 34px; height: 34px; background: var(--wa); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.logo-text { font-size: 16px; font-weight: 900; color: white; }
+.logo-text span { color: var(--wa); }
+.partner-tag {
+  margin: 14px 14px 4px;
+  background: rgba(37,211,102,0.1);
+  border: 1px solid rgba(37,211,102,0.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--wa);
+  font-weight: 700;
+  line-height: 1.4;
+}
+.partner-tag .p-label { font-size: 10px; color: rgba(255,255,255,0.3); display: block; font-family: var(--mono); letter-spacing: 1px; margin-bottom: 3px; }
+.nav { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 2px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 11px; border-radius: 7px;
+  cursor: pointer; color: rgba(255,255,255,0.45);
+  font-size: 13px; font-weight: 600;
+  border: none; background: none; width: 100%; text-align: right;
+  transition: all 0.15s;
+}
+.nav-item:hover { background: rgba(255,255,255,0.06); color: white; }
+.nav-item.active { background: var(--wa); color: white; }
+.nav-item .icon { font-size: 15px; flex-shrink: 0; }
+.sidebar-bottom { padding: 14px; border-top: 1px solid rgba(255,255,255,0.06); }
+.plan-badge {
+  background: rgba(245,196,66,0.1); border: 1px solid rgba(245,196,66,0.25);
+  border-radius: 8px; padding: 10px 12px; text-align: center;
+}
+.plan-name { font-size: 13px; font-weight: 700; color: #f5c842; }
+.plan-renew { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 3px; font-family: var(--mono); }
+.upgrade-btn {
+  width: 100%; margin-top: 8px; padding: 8px;
+  background: var(--wa); color: white;
+  border: none; border-radius: 7px;
+  font-family: var(--font); font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+}
+.upgrade-btn:hover { background: var(--wa-dark); }
+
+/* MAIN */
+.main { margin-right: 220px; }
+.topbar {
+  background: white; border-bottom: 1px solid var(--border);
+  padding: 0 24px; height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 40;
+}
+.topbar-title { font-size: 15px; font-weight: 700; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 7px;
+  font-family: var(--font); font-size: 12px; font-weight: 700;
+  cursor: pointer; border: none; transition: all 0.15s;
+}
+.btn-wa { background: var(--wa); color: white; }
+.btn-wa:hover { background: var(--wa-dark); }
+.btn-outline { background: none; border: 1.5px solid var(--border); color: var(--mid); }
+.btn-outline:hover { border-color: var(--text); color: var(--text); }
+
+/* PAGES */
+.page { display: none; padding: 24px; }
+.page.active { display: block; }
+
+/* STAT CARDS */
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+.stat-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 11px; padding: 18px;
+  box-shadow: var(--shadow); position: relative; overflow: hidden;
+}
+.stat-card::after { content: ''; position: absolute; top:0;right:0; width:3px; height:100%; }
+.stat-card.g::after { background: var(--wa); }
+.stat-card.b::after { background: var(--accent); }
+.stat-card.o::after { background: var(--orange); }
+.stat-card.y::after { background: var(--yellow); }
+.stat-icon { font-size: 20px; margin-bottom: 10px; display: block; }
+.stat-val { font-size: 26px; font-weight: 900; font-family: var(--mono); line-height: 1; margin-bottom: 3px; }
+.stat-lbl { font-size: 11px; color: var(--dim); font-weight: 600; }
+.stat-delta { margin-top: 8px; font-size: 10px; font-family: var(--mono); }
+.up { color: var(--wa); }
+.down { color: var(--red); }
+
+/* GRID */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.g3 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 20px; }
+
+/* CARD */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 11px; box-shadow: var(--shadow); overflow: hidden; }
+.card-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 13px; font-weight: 700; }
+.card-body { padding: 18px; }
+
+/* CHART */
+.bars { display: flex; align-items: flex-end; gap: 6px; height: 100px; padding-top: 8px; }
+.bar-g { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; height:100%; justify-content:flex-end; }
+.bar { width:100%; border-radius:3px 3px 0 0; min-height:3px; cursor:pointer; transition: opacity 0.15s; }
+.bar:hover { opacity: 0.8; }
+.bar.wa { background: var(--wa); }
+.bar.ac { background: var(--accent); }
+.bar-lb { font-size: 9px; color: var(--dim); font-family: var(--mono); }
+
+/* DONUT */
+.donut-wrap { display:flex; align-items:center; gap:16px; }
+.donut { width:90px; height:90px; border-radius:50%; position:relative; flex-shrink:0;
+  background: conic-gradient(var(--wa) 0% 68%, var(--border) 68% 100%); }
+.donut::after { content:''; position:absolute; top:50%;left:50%; transform:translate(-50%,-50%); width:54px;height:54px; background:white; border-radius:50%; }
+.donut-center { position:absolute; top:50%;left:50%; transform:translate(-50%,-50%); z-index:1; font-family:var(--mono); font-size:15px; font-weight:700; color:var(--text); }
+.d-legend { flex:1; }
+.d-item { display:flex; align-items:center; gap:6px; margin-bottom:7px; font-size:12px; }
+.d-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+
+/* TABLE */
+.tbl { width:100%; border-collapse:collapse; }
+.tbl th { text-align:right; padding:9px 14px; font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--dim); background:var(--bg); border-bottom:1px solid var(--border); font-family:var(--mono); }
+.tbl td { padding:11px 14px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:middle; }
+.tbl tr:last-child td { border-bottom:none; }
+.tbl tr:hover td { background:rgba(0,87,255,0.02); }
+.badge { display:inline-flex; align-items:center; gap:3px; font-size:10px; padding:2px 8px; border-radius:20px; font-weight:700; font-family:var(--mono); }
+.bg { background:rgba(37,211,102,0.1);color:var(--wa-dark); }
+.bo { background:rgba(255,107,43,0.1);color:var(--orange); }
+.br { background:rgba(239,68,68,0.1);color:var(--red); }
+.bb { background:rgba(0,87,255,0.1);color:var(--accent); }
+
+/* LINK BOX */
+.link-box {
+  background: var(--bg); border: 1.5px dashed var(--border);
+  border-radius: 10px; padding: 18px;
+  display: flex; align-items: center; gap: 12px;
+}
+.link-val { flex:1; font-family: var(--mono); font-size:12px; color:var(--mid); word-break:break-all; }
+.copy-btn { background:var(--wa); color:white; border:none; border-radius:7px; padding:7px 14px; font-family:var(--font); font-size:12px; font-weight:700; cursor:pointer; flex-shrink:0; transition:all 0.15s; }
+.copy-btn:hover { background:var(--wa-dark); }
+
+/* QR */
+.qr-box { display:flex; flex-direction:column; align-items:center; gap:12px; padding:20px; }
+.qr-img { width:140px;height:140px; background:var(--bg); border:1px solid var(--border); border-radius:10px; display:flex;align-items:center;justify-content:center; font-size:64px; }
+.qr-hint { font-size:12px; color:var(--dim); text-align:center; line-height:1.5; }
+
+/* LEADS */
+.lead-card { border:1px solid var(--border); border-radius:9px; padding:14px; margin-bottom:10px; background:white; }
+.lead-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.lead-name { font-size:14px; font-weight:700; }
+.lead-body { display:grid; grid-template-columns: repeat(3,1fr); gap:8px; }
+.lead-field { font-size:11px; }
+.lead-field .lf-label { color:var(--dim); margin-bottom:2px; font-family:var(--mono); font-size:10px; }
+.lead-field .lf-val { font-weight:700; font-size:12px; }
+
+/* SETTINGS */
+.form-group { margin-bottom:14px; }
+.form-label { display:block; font-size:11px; font-weight:700; color:var(--mid); margin-bottom:5px; letter-spacing:0.5px; }
+.form-input, .form-select { width:100%; padding:9px 13px; border:1.5px solid var(--border); border-radius:8px; font-family:var(--font); font-size:13px; outline:none; transition:border-color 0.15s; background:white; }
+.form-input:focus, .form-select:focus { border-color:var(--wa); }
+.toggle-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); }
+.toggle-title { font-size:13px; font-weight:700; }
+.toggle-desc { font-size:11px; color:var(--dim); margin-top:2px; }
+.toggle { width:40px;height:22px; background:var(--border); border-radius:11px; position:relative; cursor:pointer; transition:background 0.2s; flex-shrink:0; }
+.toggle.on { background:var(--wa); }
+.toggle::after { content:''; position:absolute; top:3px;right:3px; width:16px;height:16px; background:white; border-radius:50%; transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2); }
+.toggle.on::after { transform:translateX(-18px); }
+
+@media(max-width:768px){ .sidebar{width:56px;} .logo-text,.partner-tag,.nav-item span,.plan-badge,.upgrade-btn,.plan-name,.plan-renew{display:none;} .main{margin-right:56px;} .stats-row{grid-template-columns:repeat(2,1fr);} .g2,.g3{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">💬</div>
+    <div class="logo-text">Bot<span>Flow</span></div>
+  </div>
+  <div class="partner-tag">
+    <span class="p-label">PARTNER</span>
+    شركة الحياة للتأمين
+  </div>
+  <nav class="nav">
+    <button class="nav-item active" onclick="go('dash',this)"><span class="icon">📊</span><span>لوحتي</span></button>
+    <button class="nav-item" onclick="go('leads',this)"><span class="icon">🎯</span><span>الطلبات</span></button>
+    <button class="nav-item" onclick="go('link',this)"><span class="icon">🔗</span><span>رابطي + QR</span></button>
+    <button class="nav-item" onclick="go('analytics',this)"><span class="icon">📈</span><span>التحليلات</span></button>
+    <button class="nav-item" onclick="go('settings',this)"><span class="icon">⚙️</span><span>الإعدادات</span></button>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="plan-badge">
+      <div class="plan-name">⭐ Growth Plan</div>
+      <div class="plan-renew">يتجدد 01/06/2025</div>
+    </div>
+    <button class="upgrade-btn">⬆️ ترقية الباقة</button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">لوحتي الشخصية</div>
+    <div class="topbar-right">
+      <button class="btn btn-outline">📥 تصدير</button>
+      <button class="btn btn-wa" onclick="go('link',document.querySelector('.nav-item:nth-child(3)'))">🔗 رابطي</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dash" class="page active">
+    <div class="stats-row">
+      <div class="stat-card g">
+        <span class="stat-icon">💬</span>
+        <div class="stat-val">8,241</div>
+        <div class="stat-lbl">إجمالي المحادثات</div>
+        <div class="stat-delta up">↑ 18% هذا الشهر</div>
+      </div>
+      <div class="stat-card b">
+        <span class="stat-icon">👥</span>
+        <div class="stat-val">3,104</div>
+        <div class="stat-lbl">عملاء جدد</div>
+        <div class="stat-delta up">↑ 22% هذا الشهر</div>
+      </div>
+      <div class="stat-card o">
+        <span class="stat-icon">🎯</span>
+        <div class="stat-val">612</div>
+        <div class="stat-lbl">طلبات مكتملة</div>
+        <div class="stat-delta up">↑ 9% هذا الشهر</div>
+      </div>
+      <div class="stat-card y">
+        <span class="stat-icon">📊</span>
+        <div class="stat-val">74%</div>
+        <div class="stat-lbl">معدل الإتمام</div>
+        <div class="stat-delta up">↑ 4 نقاط</div>
+      </div>
+    </div>
+
+    <div class="g3">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📊 المحادثات — آخر 7 أيام</div>
+          <span class="badge bg">● مباشر</span>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;gap:12px;margin-bottom:10px;">
+            <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--dim);"><span style="width:9px;height:9px;background:var(--wa);border-radius:2px;display:inline-block;"></span>محادثات</span>
+            <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--dim);"><span style="width:9px;height:9px;background:var(--accent);border-radius:2px;display:inline-block;"></span>طلبات</span>
+          </div>
+          <div class="bars">
+            <div class="bar-g"><div class="bar wa" style="height:55%"></div><div class="bar ac" style="height:30%"></div><div class="bar-lb">أح</div></div>
+            <div class="bar-g"><div class="bar wa" style="height:72%"></div><div class="bar ac" style="height:42%"></div><div class="bar-lb">إث</div></div>
+            <div class="bar-g"><div class="bar wa" style="height:61%"></div><div class="bar ac" style="height:35%"></div><div class="bar-lb">ثل</div></div>
+            <div class="bar-g"><div class="bar wa" style="height:88%"></div><div class="bar ac" style="height:56%"></div><div class="bar-lb">أر</div></div>
+            <div class="bar-g"><div class="bar wa" style="height:76%"></div><div class="bar ac" style="height:48%"></div><div class="bar-lb">خم</div></div>
+            <div class="bar-g"><div class="bar wa" style="height:92%"></div><div class="bar ac" style="height:62%"></div><div class="bar-lb">جم</div></div>
+            <div class="bar-g"><div class="bar wa" style="height:67%"></div><div class="bar ac" style="height:41%"></div><div class="bar-lb">سب</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">🥧 الخدمات</div></div>
+        <div class="card-body">
+          <div class="donut-wrap">
+            <div class="donut">
+              <div class="donut-center">74%</div>
+            </div>
+            <div class="d-legend">
+              <div class="d-item"><div class="d-dot" style="background:var(--wa)"></div><span style="flex:1;font-size:12px;color:var(--mid)">سيارة</span><b style="font-family:var(--mono);font-size:11px">45%</b></div>
+              <div class="d-item"><div class="d-dot" style="background:var(--accent)"></div><span style="flex:1;font-size:12px;color:var(--mid)">صحي</span><b style="font-family:var(--mono);font-size:11px">32%</b></div>
+              <div class="d-item"><div class="d-dot" style="background:var(--orange)"></div><span style="flex:1;font-size:12px;color:var(--mid)">منزل</span><b style="font-family:var(--mono);font-size:11px">15%</b></div>
+              <div class="d-item"><div class="d-dot" style="background:var(--yellow)"></div><span style="flex:1;font-size:12px;color:var(--mid)">سفر</span><b style="font-family:var(--mono);font-size:11px">8%</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- آخر الطلبات -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">🎯 آخر الطلبات</div>
+        <button class="btn btn-outline" style="font-size:11px;padding:5px 10px;" onclick="go('leads',document.querySelector('.nav-item:nth-child(2)'))">عرض الكل</button>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>العميل</th><th>الخدمة</th><th>التفاصيل</th><th>الوقت</th><th>الحالة</th></tr></thead>
+        <tbody>
+          <tr><td><b>محمد العتيبي</b><br><span style="font-size:11px;color:var(--dim)">+966501234567</span></td><td><span class="badge bb">🚗 سيارة</span></td><td style="font-size:12px">تويوتا كامري 2022<br>الخطة القياسية</td><td style="font-family:var(--mono);font-size:11px;color:var(--dim)">منذ 14 د</td><td><span class="badge bg">● جديد</span></td></tr>
+          <tr><td><b>سارة الحربي</b><br><span style="font-size:11px;color:var(--dim)">+966509876543</span></td><td><span class="badge bo">💊 صحي</span></td><td style="font-size:12px">عمر 34 — خطة بلس<br>فردي</td><td style="font-family:var(--mono);font-size:11px;color:var(--dim)">منذ 42 د</td><td><span class="badge bg">● جديد</span></td></tr>
+          <tr><td><b>خالد المطيري</b><br><span style="font-size:11px;color:var(--dim)">+966505555555</span></td><td><span class="badge bb">🚗 سيارة</span></td><td style="font-size:12px">هوندا سيفيك 2021<br>الخطة المميزة</td><td style="font-family:var(--mono);font-size:11px;color:var(--dim)">منذ 1س</td><td><span class="badge" style="background:rgba(0,87,255,0.1);color:var(--accent)">● مُعالَج</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LEADS -->
+  <div id="leads" class="page">
+    <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;">
+      <input style="flex:1;padding:9px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;outline:none;" placeholder="🔍 ابحث باسم أو رقم هاتف..." type="text">
+      <select style="padding:9px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;background:white;">
+        <option>كل الخدمات</option><option>سيارة</option><option>صحي</option><option>منزل</option>
+      </select>
+      <button class="btn btn-outline">📥 تصدير CSV</button>
+    </div>
+
+    <div class="lead-card">
+      <div class="lead-top"><div class="lead-name">محمد العتيبي</div><span class="badge bg">● جديد</span></div>
+      <div class="lead-body">
+        <div class="lead-field"><div class="lf-label">PHONE</div><div class="lf-val">+966501234567</div></div>
+        <div class="lead-field"><div class="lf-label">SERVICE</div><div class="lf-val">🚗 تأمين سيارة</div></div>
+        <div class="lead-field"><div class="lf-label">VEHICLE</div><div class="lf-val">تويوتا كامري 2022</div></div>
+        <div class="lead-field"><div class="lf-label">PLAN</div><div class="lf-val">القياسية — 1,490 ر</div></div>
+        <div class="lead-field"><div class="lf-label">DATE</div><div class="lf-val">02/05/2025 10:14ص</div></div>
+        <div class="lead-field"><div class="lf-label">SOURCE</div><div class="lf-val">QR Code — فرع الرياض</div></div>
+      </div>
+    </div>
+    <div class="lead-card">
+      <div class="lead-top"><div class="lead-name">سارة الحربي</div><span class="badge bo">● قيد المعالجة</span></div>
+      <div class="lead-body">
+        <div class="lead-field"><div class="lf-label">PHONE</div><div class="lf-val">+966509876543</div></div>
+        <div class="lead-field"><div class="lf-label">SERVICE</div><div class="lf-val">💊 تأمين صحي</div></div>
+        <div class="lead-field"><div class="lf-label">AGE</div><div class="lf-val">34 سنة</div></div>
+        <div class="lead-field"><div class="lf-label">PLAN</div><div class="lf-val">بلس — 2,100 ر</div></div>
+        <div class="lead-field"><div class="lf-label">DATE</div><div class="lf-val">02/05/2025 09:32ص</div></div>
+        <div class="lead-field"><div class="lf-label">SOURCE</div><div class="lf-val">رابط واتساب</div></div>
+      </div>
+    </div>
+    <div class="lead-card">
+      <div class="lead-top"><div class="lead-name">خالد المطيري</div><span class="badge" style="background:rgba(0,87,255,0.1);color:var(--accent)">● مُعالَج</span></div>
+      <div class="lead-body">
+        <div class="lead-field"><div class="lf-label">PHONE</div><div class="lf-val">+966505555555</div></div>
+        <div class="lead-field"><div class="lf-label">SERVICE</div><div class="lf-val">🚗 تأمين سيارة</div></div>
+        <div class="lead-field"><div class="lf-label">VEHICLE</div><div class="lf-val">هوندا سيفيك 2021</div></div>
+        <div class="lead-field"><div class="lf-label">PLAN</div><div class="lf-val">المميزة — 2,299 ر</div></div>
+        <div class="lead-field"><div class="lf-label">DATE</div><div class="lf-val">01/05/2025 04:18م</div></div>
+        <div class="lead-field"><div class="lf-label">SOURCE</div><div class="lf-val">رابط واتساب</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LINK + QR -->
+  <div id="link" class="page">
+    <div class="g2">
+      <div class="card">
+        <div class="card-head"><div class="card-title">🔗 رابط واتساب الخاص بك</div></div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--mid);margin-bottom:14px;">هذا رابطك الفريد. شاركه مع عملائك وسيتعرف البوت عليهم تلقائياً.</p>
+          <div class="link-box">
+            <div class="link-val">https://wa.me/966501234567?start=insurance_alhaya</div>
+            <button class="copy-btn" onclick="this.textContent='✅ تم';setTimeout(()=>this.textContent='نسخ',2000)">نسخ</button>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;">
+            <button class="btn btn-wa">📤 مشاركة</button>
+            <button class="btn btn-outline">🔄 تجديد الرابط</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">📱 QR Code للطباعة</div></div>
+        <div class="card-body">
+          <div class="qr-box">
+            <div class="qr-img">▛▜<br>▙▟</div>
+            <div class="qr-hint">اطبع هذا الكود وضعه في مكتبك أو على مطبوعاتك.<br>العميل يمسح ويبدأ مباشرة!</div>
+            <button class="btn btn-wa" style="width:100%;justify-content:center;">⬇️ تحميل PNG</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">📊 إحصائيات الرابط</div></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+          <div style="text-align:center;padding:14px;background:var(--bg);border-radius:8px;">
+            <div style="font-size:22px;font-weight:900;font-family:var(--mono);color:var(--wa)">3,104</div>
+            <div style="font-size:11px;color:var(--dim);margin-top:4px;">نقرات الرابط</div>
+          </div>
+          <div style="text-align:center;padding:14px;background:var(--bg);border-radius:8px;">
+            <div style="font-size:22px;font-weight:900;font-family:var(--mono);color:var(--accent)">847</div>
+            <div style="font-size:11px;color:var(--dim);margin-top:4px;">من QR Code</div>
+          </div>
+          <div style="text-align:center;padding:14px;background:var(--bg);border-radius:8px;">
+            <div style="font-size:22px;font-weight:900;font-family:var(--mono);color:var(--orange)">74%</div>
+            <div style="font-size:11px;color:var(--dim);margin-top:4px;">معدل التفاعل</div>
+          </div>
+          <div style="text-align:center;padding:14px;background:var(--bg);border-radius:8px;">
+            <div style="font-size:22px;font-weight:900;font-family:var(--mono);color:var(--yellow)">612</div>
+            <div style="font-size:11px;color:var(--dim);margin-top:4px;">طلبات مكتملة</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS -->
+  <div id="analytics" class="page">
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <button class="btn btn-wa">آخر 7 أيام</button>
+      <button class="btn btn-outline">30 يوم</button>
+      <button class="btn btn-outline">90 يوم</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card g"><span class="stat-icon">📩</span><div class="stat-val">24,103</div><div class="stat-lbl">إجمالي الرسائل</div><div class="stat-delta up">↑ 21%</div></div>
+      <div class="stat-card b"><span class="stat-icon">⏱️</span><div class="stat-val">1:52</div><div class="stat-lbl">متوسط وقت الإتمام</div><div class="stat-delta up">↑ أسرع بـ 18ث</div></div>
+      <div class="stat-card o"><span class="stat-icon">🔄</span><div class="stat-val">74%</div><div class="stat-lbl">معدل إتمام Flow</div><div class="stat-delta up">↑ 6%</div></div>
+      <div class="stat-card y"><span class="stat-icon">📅</span><div class="stat-val">أربعاء</div><div class="stat-lbl">أكثر يوم نشاطاً</div><div class="stat-delta" style="color:var(--mid)">10:00ص — 2:00م</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">⚠️ نقاط التخلي — أين يتوقف العملاء؟</div></div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+          <div><div style="font-size:13px;font-weight:700;">خطوة اختيار نوع التأمين</div><div style="font-size:11px;color:var(--dim);">يتوقفون بعد رسالة الترحيب</div></div>
+          <span class="badge br">28% تخلي</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+          <div><div style="font-size:13px;font-weight:700;">إدخال بيانات السيارة</div><div style="font-size:11px;color:var(--dim);">يترددون في إدخال الموديل</div></div>
+          <span class="badge bo">16% تخلي</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+          <div><div style="font-size:13px;font-weight:700;">تأكيد الطلب النهائي</div><div style="font-size:11px;color:var(--dim);">يكملون بنجاح</div></div>
+          <span class="badge bg">5% تخلي</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="settings" class="page">
+    <div class="g2">
+      <div class="card">
+        <div class="card-head"><div class="card-title">⚙️ إعدادات حسابك</div></div>
+        <div class="card-body">
+          <div class="form-group"><label class="form-label">اسم الشركة</label><input class="form-input" value="شركة الحياة للتأمين"></div>
+          <div class="form-group"><label class="form-label">رسالة الترحيب</label><textarea class="form-input" rows="3" style="resize:none;">👋 أهلاً بك في شركة الحياة للتأمين!</textarea></div>
+          <div class="form-group"><label class="form-label">رقم دعم العملاء</label><input class="form-input" value="+966501111111"></div>
+          <div class="form-group"><label class="form-label">Webhook URL (لاستلام الطلبات)</label><input class="form-input" value="https://alhaya.com/api/leads" placeholder="https://..."></div>
+          <button class="btn btn-wa">💾 حفظ التغييرات</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">🔔 الإشعارات</div></div>
+        <div class="card-body">
+          <div class="toggle-row"><div><div class="toggle-title">طلب جديد</div><div class="toggle-desc">إشعار فوري عند كل طلب</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="toggle-row"><div><div class="toggle-title">تقرير يومي</div><div class="toggle-desc">ملخص كل يوم الساعة 8ص</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="toggle-row"><div><div class="toggle-title">تنبيه انخفاض التحويل</div><div class="toggle-desc">عند انخفاض الإتمام عن 50%</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+          <div class="toggle-row"><div><div class="toggle-title">تجديد الاشتراك</div><div class="toggle-desc">تذكير قبل 7 أيام</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const titles = { dash:'لوحتي الشخصية', leads:'الطلبات', link:'رابطي + QR Code', analytics:'التحليلات', settings:'الإعدادات' };
+function go(id, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('page-title').textContent = titles[id]||'';
+}
+</script>
+</body>
+</html>
