@@ -1,0 +1,1 @@
+var express=require('express'),https=require('https'),app=express(),PORT=process.env.PORT||8080;app.use(express.json());app.get('/health',function(q,r){r.json({status:'ok'})});app.get('/webhook',function(q,r){q.query['hub.mode']&&q.query['hub.verify_token']===process.env.WA_VERIFY_TOKEN?r.status(200).send(q.query
