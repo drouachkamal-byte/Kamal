@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BotFlow Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050810;
+  --surface: #0d1117;
+  --card: #111827;
+  --border: rgba(255,255,255,0.07);
+  --wa: #25D366;
+  --wa2: #128C7E;
+  --accent: #3b82f6;
+  --orange: #f97316;
+  --text: #f1f5f9;
+  --dim: #64748b;
+  --font: 'Cairo', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+/* SCREENS */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: block; }
+
+/* ═══════════════════════════════
+   LANDING PAGE
+═══════════════════════════════ */
+#landing {
+  background: var(--bg);
+  position: relative;
+}
+
+/* Animated grid background */
+#landing::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(37,211,102,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,211,102,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 40px;
+  background: rgba(5,8,16,0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-size: 22px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-logo span { color: var(--wa); }
+.nav-dot {
+  width: 8px; height: 8px;
+  background: var(--wa);
+  border-radius: 50%;
+  animation: blink 2s ease infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.nav-btns { display: flex; gap: 10px; }
+.btn {
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-ghost { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { background: rgba(255,255,255,0.1); }
+.btn-wa { background: var(--wa); color: #050810; }
+.btn-wa:hover { background: var(--wa2); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,211,102,0.3); }
+.btn-accent { background: var(--accent); color: white; }
+.btn-accent:hover { background: #2563eb; }
+.btn-red { background: #ef4444; color: white; }
+
+/* HERO */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(37,211,102,0.08);
+  border: 1px solid rgba(37,211,102,0.2);
+  border-radius: 30px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--wa);
+  margin-bottom: 32px;
+  letter-spacing: 1px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.hero h1 {
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  animation: fadeUp 0.6s ease 0.1s both;
+}
+.hero h1 .green { color: var(--wa); }
+.hero h1 .dim { color: var(--dim); }
+
+.hero-sub {
+  font-size: 17px;
+  color: var(--dim);
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: 40px;
+  animation: fadeUp 0.6s ease 0.2s both;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeUp 0.6s ease 0.3s both;
+}
+.btn-big { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  margin-top: 64px;
+  flex-wrap: wrap;
+  animation: fadeUp 0.6s ease 0.4s both;
+}
+.h-stat { text-align: center; }
+.h-stat-num { font-size: 28px; font-weight: 900; color: var(--wa); font-family: var(--mono); }
+.h-stat-txt { font-size: 11px; color: var(--dim); letter-spacing: 1px; margin-top: 4px; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* FEATURES */
+.features {
+  position: relative;
+  z-index: 1;
+  padding: 80px 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.section-title {
+  text-align: center;
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+.section-sub {
+  text-align: center;
+  color: var(--dim);
+  font-size: 15px;
+  margin-bottom: 48px;
+}
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.feat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.feat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--wa), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.feat-card:hover { border-color: rgba(37,211,102,0.2); transform: translateY(-2px); }
+.feat-card:hover::before { opacity: 1; }
+.feat-icon { font-size: 28px; margin-bottom: 14px; }
+.feat-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+.feat-desc { font-size: 13px; color: var(--dim); line-height: 1.6; }
+
+/* PRICING */
+.pricing {
+  position: relative;
+  z-index: 1;
+  padding: 80px 40px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+.price-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  transition: all 0.2s;
+  position: relative;
+}
+.price-card.popular {
+  border-color: var(--wa);
+  background: linear-gradient(135deg, rgba(37,211,102,0.06), var(--card));
+}
+.popular-badge {
+  position: absolute;
+  top: -10px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--wa);
+  color: #050810;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.price-name { font-size: 12px; font-weight: 700; color: var(--dim); letter-spacing: 2px; margin-bottom: 14px; font-family: var(--mono); }
+.price-amount { font-size: 40px; font-weight: 900; color: var(--wa); font-family: var(--mono); line-height: 1; }
+.price-period { font-size: 12px; color: var(--dim); margin-bottom: 20px; margin-top: 4px; }
+.price-list { list-style: none; font-size: 13px; }
+.price-list li { padding: 7px 0; border-bottom: 1px solid var(--border); color: var(--dim); display: flex; align-items: center; gap: 8px; }
+.price-list li:last-child { border: none; }
+.price-list li.yes { color: var(--text); }
+.price-list li.yes::before { content: '✓'; color: var(--wa); font-weight: 700; }
+.price-list li.no::before { content: '✗'; color: var(--dim); }
+
+/* CTA */
+.cta-section {
+  position: relative;
+  z-index: 1;
+  padding: 80px 40px;
+  text-align: center;
+}
+.cta-box {
+  max-width: 600px;
+  margin: 0 auto;
+  background: var(--card);
+  border: 1px solid rgba(37,211,102,0.2);
+  border-radius: 20px;
+  padding: 48px;
+}
+.cta-box h2 { font-size: 28px; font-weight: 900; margin-bottom: 12px; }
+.cta-box p { color: var(--dim); margin-bottom: 28px; }
+
+/* ═══════════════════════════════
+   REGISTER PAGE
+═══════════════════════════════ */
+#register {
+  background: var(--bg);
+  min-height: 100vh;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#register.active { display: flex; }
+
+.register-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 480px;
+  overflow: hidden;
+}
+.reg-header {
+  background: linear-gradient(135deg, rgba(37,211,102,0.15), transparent);
+  padding: 32px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+.reg-logo { font-size: 20px; font-weight: 900; margin-bottom: 8px; }
+.reg-logo span { color: var(--wa); }
+.reg-title { font-size: 22px; font-weight: 700; }
+.reg-sub { font-size: 13px; color: var(--dim); margin-top: 6px; }
+
+.reg-body { padding: 32px; }
+.reg-tabs {
+  display: flex;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 28px;
+}
+.reg-tab {
+  flex: 1;
+  text-align: center;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s;
+  color: var(--dim);
+}
+.reg-tab.active { background: var(--wa); color: #050810; }
+
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 12px; font-weight: 700; color: var(--dim); margin-bottom: 6px; letter-spacing: 0.5px; }
+.form-input, .form-select {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus { border-color: var(--wa); }
+.form-input::placeholder { color: var(--dim); }
+.form-select option { background: var(--card); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--wa);
+  color: #050810;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+.submit-btn:hover { background: var(--wa2); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,211,102,0.3); }
+
+.reg-footer { text-align: center; margin-top: 20px; font-size: 13px; color: var(--dim); }
+.reg-footer a { color: var(--wa); cursor: pointer; text-decoration: none; font-weight: 700; }
+
+/* ═══════════════════════════════
+   SUCCESS PAGE
+═══════════════════════════════ */
+#success {
+  background: var(--bg);
+  min-height: 100vh;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#success.active { display: flex; }
+
+.success-box {
+  background: var(--card);
+  border: 1px solid rgba(37,211,102,0.3);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 520px;
+  padding: 48px;
+  text-align: center;
+}
+.success-icon { font-size: 64px; margin-bottom: 20px; animation: bounce 0.6s ease; }
+@keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+.success-title { font-size: 26px; font-weight: 900; color: var(--wa); margin-bottom: 8px; }
+.success-sub { color: var(--dim); font-size: 14px; margin-bottom: 32px; line-height: 1.6; }
+
+.link-box {
+  background: rgba(37,211,102,0.06);
+  border: 1.5px solid rgba(37,211,102,0.2);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  text-align: right;
+}
+.link-label { font-size: 11px; color: var(--wa); font-family: var(--mono); letter-spacing: 1px; margin-bottom: 8px; font-weight: 700; }
+.link-val {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  word-break: break-all;
+  line-height: 1.5;
+}
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--wa);
+  color: #050810;
+  border: none;
+  border-radius: 7px;
+  padding: 6px 14px;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.15s;
+}
+.copy-btn:hover { background: var(--wa2); }
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 20px 0;
+  text-align: right;
+}
+.info-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.info-item .lbl { font-size: 10px; color: var(--dim); font-family: var(--mono); margin-bottom: 4px; }
+.info-item .val { font-size: 13px; font-weight: 700; }
+
+/* ═══════════════════════════════
+   ADMIN PAGE
+═══════════════════════════════ */
+#admin {
+  background: var(--bg);
+  min-height: 100vh;
+  display: none;
+}
+#admin.active { display: flex; }
+
+.admin-sidebar {
+  width: 220px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  min-height: 100vh;
+  position: fixed;
+  right: 0; top: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+}
+.admin-logo {
+  padding: 24px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 18px;
+  font-weight: 900;
+}
+.admin-logo span { color: var(--wa); }
+.admin-logo small { display: block; font-size: 10px; color: var(--dim); font-family: var(--mono); margin-top: 2px; }
+.admin-nav { flex: 1; padding: 16px 12px; }
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--dim);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: right;
+}
+.admin-nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.admin-nav-item.active { background: var(--wa); color: #050810; }
+
+.admin-main { margin-right: 220px; flex: 1; }
+.admin-topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.admin-title { font-size: 15px; font-weight: 700; }
+
+.admin-content { padding: 28px; }
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::after { content: ''; position: absolute; top:0;right:0; width:3px; height:100%; }
+.stat-card.g::after { background: var(--wa); }
+.stat-card.b::after { background: var(--accent); }
+.stat-card.o::after { background: var(--orange); }
+.stat-card.r::after { background: #ef4444; }
+.stat-icon { font-size: 20px; margin-bottom: 10px; }
+.stat-val { font-size: 28px; font-weight: 900; font-family: var(--mono); line-height: 1; }
+.stat-lbl { font-size: 11px; color: var(--dim); margin-top: 4px; }
+.stat-delta { font-size: 10px; font-family: var(--mono); margin-top: 8px; color: var(--wa); }
+
+.admin-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.admin-card-head {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.admin-card-title { font-size: 14px; font-weight: 700; }
+
+.table { width: 100%; border-collapse: collapse; }
+.table th {
+  text-align: right;
+  padding: 10px 16px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--dim);
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+}
+.table td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+.table tr:last-child td { border: none; }
+.table tr:hover td { background: rgba(255,255,255,0.02); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-family: var(--mono);
+}
+.badge-green { background: rgba(37,211,102,0.1); color: var(--wa); }
+.badge-blue { background: rgba(59,130,246,0.1); color: var(--accent); }
+.badge-orange { background: rgba(249,115,22,0.1); color: var(--orange); }
+.badge-gray { background: rgba(255,255,255,0.05); color: var(--dim); }
+
+.partner-link {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+  background: rgba(255,255,255,0.03);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+/* ADD PARTNER MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 460px;
+  overflow: hidden;
+}
+.modal-head {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-title { font-size: 16px; font-weight: 700; }
+.modal-close { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 20px; }
+.modal-body { padding: 24px; }
+
+/* NOTIFICATION */
+.notif {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--wa);
+  color: #050810;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  z-index: 999;
+  transition: transform 0.3s ease;
+  white-space: nowrap;
+}
+.notif.show { transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 768px) {
+  .feat-grid, .price-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .form-row { grid-template-columns: 1fr; }
+  .nav { padding: 16px 20px; }
+  .features, .pricing { padding: 60px 20px; }
+  .admin-sidebar { width: 56px; }
+  .admin-nav-item span { display: none; }
+  .admin-logo small, .admin-logo span+span { display: none; }
+  .admin-main { margin-right: 56px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ NOTIFICATION ═══════════ -->
+<div class="notif" id="notif">✅ تم النسخ!</div>
+
+<!-- ═══════════════════════════════
+     LANDING PAGE
+═══════════════════════════════ -->
+<div id="landing" class="screen active">
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="nav-dot"></div>
+      Bot<span>Flow</span>
+    </div>
+    <div class="nav-btns">
+      <button class="btn btn-ghost" onclick="showScreen('register'); setTab('login')">تسجيل الدخول</button>
+      <button class="btn btn-wa" onclick="showScreen('register'); setTab('signup')">ابدأ مجاناً</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-pill">
+      <div class="nav-dot"></div>
+      منصة بوتات واتساب للشركات
+    </div>
+    <h1>
+      بوت واتساب ذكي<br>
+      <span class="green">لكل شريك</span>
+      <span class="dim"> تلقائياً</span>
+    </h1>
+    <p class="hero-sub">
+      أنشئ بوت واتساب مخصص لكل عميل في دقائق.
+      تأمين، مختبرات، سيارات، عقارات — كل شريك يحصل على تجربة منفصلة بالكامل.
+    </p>
+    <div class="hero-btns">
+      <button class="btn btn-wa btn-big" onclick="showScreen('register'); setTab('signup')">🚀 ابدأ مجاناً</button>
+      <button class="btn btn-ghost btn-big" onclick="showScreen('admin')">👁️ عرض الداشبورد</button>
+    </div>
+    <div class="hero-stats">
+      <div class="h-stat">
+        <div class="h-stat-num">10+</div>
+        <div class="h-stat-txt">أنواع Flows</div>
+      </div>
+      <div class="h-stat">
+        <div class="h-stat-num">68%</div>
+        <div class="h-stat-txt">معدل إتمام</div>
+      </div>
+      <div class="h-stat">
+        <div class="h-stat-num">3 أيام</div>
+        <div class="h-stat-txt">للإطلاق</div>
+      </div>
+      <div class="h-stat">
+        <div class="h-stat-num">90%</div>
+        <div class="h-stat-txt">هامش ربح</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="section-title">كل ما تحتاجه في مكان واحد</div>
+    <div class="section-sub">منصة متكاملة لإدارة بوتات واتساب لجميع شركائك</div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">🔀</div>
+        <div class="feat-title">توجيه تلقائي</div>
+        <div class="feat-desc">كل مستخدم يُوجَّه فوراً لخدمات شريكه بناءً على الرابط الخاص به — بدون أي تدخل يدوي.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚡</div>
+        <div class="feat-title">إعداد في دقائق</div>
+        <div class="feat-desc">أضف شريكاً جديداً، احصل على رابطه وQR Code فوراً، وابدأ استقبال الطلبات.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <div class="feat-title">تحليلات متقدمة</div>
+        <div class="feat-desc">إحصائيات يومية لكل شريك: محادثات، عملاء جدد، معدل الإتمام، والطلبات.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔌</div>
+        <div class="feat-title">تكامل سهل</div>
+        <div class="feat-desc">كل طلب مكتمل يُرسَل فوراً لنظام الشريك عبر Webhook أو إيميل.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📱</div>
+        <div class="feat-title">QR Code تلقائي</div>
+        <div class="feat-desc">كل شريك يحصل على QR Code جاهز للطباعة — مثالي للمطبوعات والمحلات.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🛡️</div>
+        <div class="feat-title">آمن وموثوق</div>
+        <div class="feat-desc">كل شريك معزول تماماً عن الآخر. بياناتك وبيانات عملائك محمية.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing">
+    <div class="section-title">أسعار بسيطة وشفافة</div>
+    <div class="section-sub">ادفع لكل شريك — كلما زاد عدد شركائك، زاد ربحك</div>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-name">STARTER</div>
+        <div class="price-amount">$99</div>
+        <div class="price-period">لكل شريك / شهرياً</div>
+        <ul class="price-list">
+          <li class="yes">Flow واحد مخصص</li>
+          <li class="yes">500 مستخدم/شهر</li>
+          <li class="yes">رابط + QR Code</li>
+          <li class="yes">تقارير أساسية</li>
+          <li class="no">Webhook</li>
+          <li class="no">Broadcast</li>
+        </ul>
+        <button class="btn btn-ghost" style="width:100%;margin-top:20px;justify-content:center;" onclick="showScreen('register');setTab('signup')">ابدأ الآن</button>
+      </div>
+      <div class="price-card popular">
+        <div class="popular-badge">⭐ الأكثر طلباً</div>
+        <div class="price-name">GROWTH</div>
+        <div class="price-amount">$299</div>
+        <div class="price-period">لكل شريك / شهرياً</div>
+        <ul class="price-list">
+          <li class="yes">3 Flows متخصصة</li>
+          <li class="yes">2,000 مستخدم/شهر</li>
+          <li class="yes">رابط + QR Code</li>
+          <li class="yes">تحليلات متقدمة</li>
+          <li class="yes">Webhook للشريك</li>
+          <li class="yes">حملات Broadcast</li>
+        </ul>
+        <button class="btn btn-wa" style="width:100%;margin-top:20px;justify-content:center;" onclick="showScreen('register');setTab('signup')">ابدأ الآن</button>
+      </div>
+      <div class="price-card">
+        <div class="price-name">ENTERPRISE</div>
+        <div class="price-amount">$799+</div>
+        <div class="price-period">مخصص / شهرياً</div>
+        <ul class="price-list">
+          <li class="yes">Flows غير محدودة</li>
+          <li class="yes">مستخدمون غير محدودون</li>
+          <li class="yes">رقم واتساب مخصص</li>
+          <li class="yes">API كامل</li>
+          <li class="yes">تكامل CRM</li>
+          <li class="yes">SLA + دعم أولوية</li>
+        </ul>
+        <button class="btn btn-ghost" style="width:100%;margin-top:20px;justify-content:center;" onclick="showScreen('register');setTab('signup')">تواصل معنا</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="cta-box">
+      <h2>جاهز للبدء؟ 🚀</h2>
+      <p>انضم لمئات الشركاء الذين يستخدمون BotFlow لتنمية أعمالهم</p>
+      <button class="btn btn-wa btn-big" style="width:100%;justify-content:center;" onclick="showScreen('register');setTab('signup')">سجّل الآن مجاناً</button>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════
+     REGISTER / LOGIN
+═══════════════════════════════ -->
+<div id="register" class="screen">
+  <div class="register-box">
+    <div class="reg-header">
+      <div class="reg-logo">Bot<span>Flow</span></div>
+      <div class="reg-title" id="reg-title">إنشاء حساب جديد</div>
+      <div class="reg-sub" id="reg-sub">انضم وابدأ في بناء بوتك الأول</div>
+    </div>
+    <div class="reg-body">
+      <div class="reg-tabs">
+        <div class="reg-tab active" id="tab-signup" onclick="setTab('signup')">تسجيل جديد</div>
+        <div class="reg-tab" id="tab-login" onclick="setTab('login')">دخول</div>
+      </div>
+
+      <!-- SIGNUP FORM -->
+      <div id="form-signup">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">الاسم الأول</label>
+            <input class="form-input" id="s-fname" type="text" placeholder="كمال">
+          </div>
+          <div class="form-group">
+            <label class="form-label">الاسم الأخير</label>
+            <input class="form-input" id="s-lname" type="text" placeholder="درواش">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">البريد الإلكتروني</label>
+          <input class="form-input" id="s-email" type="email" placeholder="kamal@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">رقم الواتساب</label>
+          <input class="form-input" id="s-phone" type="tel" placeholder="+212700000000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">نوع نشاطك</label>
+          <select class="form-select" id="s-type">
+            <option value="">اختر القطاع</option>
+            <option value="insurance">تأمين</option>
+            <option value="lab">مختبرات طبية</option>
+            <option value="rental">تأجير سيارات</option>
+            <option value="realestate">عقارات</option>
+            <option value="agency">وكالة تسويق</option>
+            <option value="other">أخرى</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">الباقة</label>
+          <select class="form-select" id="s-plan">
+            <option value="starter">Starter — $99/شريك</option>
+            <option value="growth" selected>Growth — $299/شريك</option>
+            <option value="enterprise">Enterprise — تواصل معنا</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">كلمة المرور</label>
+          <input class="form-input" id="s-pass" type="password" placeholder="••••••••">
+        </div>
+        <button class="submit-btn" onclick="doRegister()">🚀 إنشاء الحساب</button>
+        <div class="reg-footer">
+          عندك حساب؟ <a onclick="setTab('login')">سجّل الدخول</a>
+        </div>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="form-login" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">البريد الإلكتروني</label>
+          <input class="form-input" id="l-email" type="email" placeholder="kamal@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">كلمة المرور</label>
+          <input class="form-input" id="l-pass" type="password" placeholder="••••••••">
+        </div>
+        <button class="submit-btn" onclick="doLogin()">تسجيل الدخول</button>
+        <div class="reg-footer" style="margin-top:12px;">
+          <a onclick="showScreen('admin')" style="color:var(--dim);font-size:12px;">← دخول كمدير (تجريبي)</a>
+        </div>
+        <div class="reg-footer">
+          ما عندك حساب؟ <a onclick="setTab('signup')">سجّل الآن</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     SUCCESS PAGE
+═══════════════════════════════ -->
+<div id="success" class="screen">
+  <div class="success-box">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">تم إنشاء حسابك!</div>
+    <div class="success-sub">مرحباً <span id="success-name">كمال</span>! حسابك جاهز الآن.<br>هذا هو رابط واتساب الخاص بك — شاركه مع عملائك.</div>
+
+    <div class="link-box">
+      <div class="link-label">WHATSAPP LINK</div>
+      <div class="link-val" id="success-link">https://wa.me/+212702486818?text=start_insurance_kamal</div>
+      <button class="copy-btn" onclick="copyLink('success-link')">📋 نسخ الرابط</button>
+    </div>
+
+    <div class="link-box">
+      <div class="link-label">KEYWORD للعملاء</div>
+      <div class="link-val" id="success-keyword">start_insurance_kamal</div>
+      <button class="copy-btn" onclick="copyLink('success-keyword')">📋 نسخ</button>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="lbl">PLAN</div>
+        <div class="val" id="success-plan">Growth</div>
+      </div>
+      <div class="info-item">
+        <div class="lbl">TYPE</div>
+        <div class="val" id="success-type">تأمين</div>
+      </div>
+      <div class="info-item">
+        <div class="lbl">STATUS</div>
+        <div class="val" style="color:var(--wa)">● Active</div>
+      </div>
+      <div class="info-item">
+        <div class="lbl">USERS</div>
+        <div class="val">0</div>
+      </div>
+    </div>
+
+    <button class="btn btn-wa" style="width:100%;justify-content:center;margin-top:8px;" onclick="showScreen('admin')">
+      → الذهاب للوحة التحكم
+    </button>
+    <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:10px;" onclick="showScreen('landing')">
+      ← العودة للرئيسية
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     ADMIN DASHBOARD
+═══════════════════════════════ -->
+<div id="admin" class="screen">
+  <aside class="admin-sidebar">
+    <div class="admin-logo">
+      Bot<span>Flow</span>
+      <small>ADMIN PANEL</small>
+    </div>
+    <nav class="admin-nav">
+      <button class="admin-nav-item active" onclick="adminTab('overview',this)">
+        <span>📊</span><span>نظرة عامة</span>
+      </button>
+      <button class="admin-nav-item" onclick="adminTab('partners',this)">
+        <span>🤝</span><span>الشركاء</span>
+      </button>
+      <button class="admin-nav-item" onclick="adminTab('analytics',this)">
+        <span>📈</span><span>التحليلات</span>
+      </button>
+      <button class="admin-nav-item" onclick="adminTab('settings',this)">
+        <span>⚙️</span><span>الإعدادات</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div class="admin-title" id="admin-title">نظرة عامة</div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-ghost" onclick="showScreen('landing')" style="font-size:12px;">← الرئيسية</button>
+        <button class="btn btn-wa" onclick="openModal()" style="font-size:12px;">+ شريك جديد</button>
+      </div>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- OVERVIEW -->
+      <div id="tab-overview">
+        <div class="stats-row">
+          <div class="stat-card g">
+            <div class="stat-icon">🤝</div>
+            <div class="stat-val" id="stat-partners">4</div>
+            <div class="stat-lbl">شركاء نشطون</div>
+            <div class="stat-delta">↑ +1 هذا الشهر</div>
+          </div>
+          <div class="stat-card b">
+            <div class="stat-icon">💬</div>
+            <div class="stat-val">24,817</div>
+            <div class="stat-lbl">إجمالي المحادثات</div>
+            <div class="stat-delta">↑ 18% هذا الشهر</div>
+          </div>
+          <div class="stat-card o">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-val">68%</div>
+            <div class="stat-lbl">معدل الإتمام</div>
+            <div class="stat-delta">↑ 5% تحسن</div>
+          </div>
+          <div class="stat-card r">
+            <div class="stat-icon">💰</div>
+            <div class="stat-val" id="stat-revenue">$1,196</div>
+            <div class="stat-lbl">الإيراد الشهري</div>
+            <div class="stat-delta">↑ 12% نمو</div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-head">
+            <div class="admin-card-title">🔔 آخر النشاطات</div>
+          </div>
+          <div style="padding:16px;">
+            <div id="activity-feed"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARTNERS -->
+      <div id="tab-partners" style="display:none;">
+        <div class="admin-card">
+          <div class="admin-card-head">
+            <div class="admin-card-title">🤝 الشركاء المسجلون</div>
+            <button class="btn btn-wa" onclick="openModal()" style="font-size:12px;">+ إضافة</button>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>الشريك</th>
+                <th>النوع</th>
+                <th>الرابط</th>
+                <th>الباقة</th>
+                <th>الحالة</th>
+                <th>إجراء</th>
+              </tr>
+            </thead>
+            <tbody id="partners-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div id="tab-analytics" style="display:none;">
+        <div class="stats-row">
+          <div class="stat-card g"><div class="stat-icon">📩</div><div class="stat-val">94,230</div><div class="stat-lbl">إجمالي الرسائل</div></div>
+          <div class="stat-card b"><div class="stat-icon">⏱️</div><div class="stat-val">1:47</div><div class="stat-lbl">متوسط وقت الإتمام</div></div>
+          <div class="stat-card o"><div class="stat-icon">🔄</div><div class="stat-val">68%</div><div class="stat-lbl">معدل إتمام Flow</div></div>
+          <div class="stat-card r"><div class="stat-icon">😊</div><div class="stat-val">4.7</div><div class="stat-lbl">رضا العملاء</div></div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-head"><div class="admin-card-title">📊 أداء الشركاء</div></div>
+          <table class="table">
+            <thead><tr><th>الشريك</th><th>المحادثات</th><th>الطلبات</th><th>معدل الإتمام</th></tr></thead>
+            <tbody id="analytics-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="tab-settings" style="display:none;">
+        <div class="admin-card">
+          <div class="admin-card-head"><div class="admin-card-title">⚙️ إعدادات المنصة</div></div>
+          <div style="padding:24px;">
+            <div class="form-group">
+              <label class="form-label">رقم واتساب الرئيسي</label>
+              <input class="form-input" value="+212702486818">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ultramsg Instance ID</label>
+              <input class="form-input" value="instance172946">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ultramsg Token</label>
+              <input class="form-input" type="password" value="c7str810lfcevjl0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Railway Webhook URL</label>
+              <input class="form-input" value="https://kamal-production.up.railway.app/webhook">
+            </div>
+            <button class="btn btn-wa">💾 حفظ الإعدادات</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════
+     ADD PARTNER MODAL
+═══════════════════════════════ -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">➕ إضافة شريك جديد</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">اسم الشريك / الشركة</label>
+        <input class="form-input" id="m-name" placeholder="شركة الحياة للتأمين">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Slug (بدون مسافات)</label>
+        <input class="form-input" id="m-slug" placeholder="insurance_alhaya" dir="ltr">
+      </div>
+      <div class="form-group">
+        <label class="form-label">نوع الخدمة</label>
+        <select class="form-select" id="m-type">
+          <option value="insurance">تأمين</option>
+          <option value="lab">مختبرات</option>
+          <option value="rental">سيارات</option>
+          <option value="realestate">عقارات</option>
+          <option value="other">أخرى</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">الباقة</label>
+        <select class="form-select" id="m-plan">
+          <option value="starter">Starter — $99</option>
+          <option value="growth">Growth — $299</option>
+          <option value="enterprise">Enterprise — $799</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Webhook URL (اختياري)</label>
+        <input class="form-input" id="m-webhook" placeholder="https://partner.com/api/leads" dir="ltr">
+      </div>
+      <button class="btn btn-wa" style="width:100%;justify-content:center;" onclick="addPartner()">
+        ✅ إضافة الشريك
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════
+// DATA
+// ═══════════════════════════════
+var partners = [
+  { name: 'شركة الحياة للتأمين', slug: 'insurance_alhaya', type: 'insurance', typeLabel: 'تأمين', plan: 'growth', planLabel: 'Growth', convs: 8241, leads: 612, completion: 74, status: 'active' },
+  { name: 'مختبرات النور', slug: 'lab_alnoor', type: 'lab', typeLabel: 'مختبر', plan: 'starter', planLabel: 'Starter', convs: 5109, leads: 380, completion: 65, status: 'active' },
+  { name: 'ريال لتأجير السيارات', slug: 'rental_real', type: 'rental', typeLabel: 'سيارات', plan: 'growth', planLabel: 'Growth', convs: 3872, leads: 290, completion: 52, status: 'active' },
+  { name: 'عقارات الخليج', slug: 'real_estate_gulf', type: 'realestate', typeLabel: 'عقارات', plan: 'starter', planLabel: 'Starter', convs: 2415, leads: 120, completion: 44, status: 'trial' },
+];
+
+var activities = [
+  { icon: '🟢', text: 'شريك جديد: <b>مختبر الأمل</b> انضم للمنصة', time: 'منذ 12 دقيقة' },
+  { icon: '🔵', text: 'تم إتمام <b>147 محادثة</b> بنجاح اليوم', time: 'منذ 1 ساعة' },
+  { icon: '🟠', text: '<b>ريال للسيارات</b> طلب تعديل على Flow رقم 3', time: 'منذ 3 ساعات' },
+  { icon: '🟡', text: 'تجديد اشتراك <b>شركة الحياة</b> — $299', time: 'أمس 4:30م' },
+  { icon: '🔴', text: 'تنبيه: معدل تخلي مرتفع في <b>عقارات الخليج</b>', time: 'أمس 9:00ص' },
+];
+
+var WA_NUMBER = '+212702486818';
+
+// ═══════════════════════════════
+// SCREENS
+// ═══════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+
+  if (id === 'admin') {
+    renderAll();
+  }
+}
+
+// ═══════════════════════════════
+// REGISTER TABS
+// ═══════════════════════════════
+function setTab(tab) {
+  var isSignup = tab === 'signup';
+  document.getElementById('tab-signup').classList.toggle('active', isSignup);
+  document.getElementById('tab-login').classList.toggle('active', !isSignup);
+  document.getElementById('form-signup').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('form-login').style.display = isSignup ? 'none' : 'block';
+  document.getElementById('reg-title').textContent = isSignup ? 'إنشاء حساب جديد' : 'تسجيل الدخول';
+  document.getElementById('reg-sub').textContent = isSignup ? 'انضم وابدأ في بناء بوتك الأول' : 'مرحباً بعودتك!';
+}
+
+function doRegister() {
+  var fname = document.getElementById('s-fname').value.trim();
+  var email = document.getElementById('s-email').value.trim();
+  var phone = document.getElementById('s-phone').value.trim();
+  var type = document.getElementById('s-type').value;
+  var plan = document.getElementById('s-plan').value;
+
+  if (!fname || !email || !phone || !type) {
+    alert('يرجى ملء جميع الحقول');
+    return;
+  }
+
+  // Generate slug
+  var slug = type + '_' + fname.toLowerCase().replace(/\s/g,'');
+  var typeLabels = { insurance: 'تأمين', lab: 'مختبر', rental: 'سيارات', realestate: 'عقارات', agency: 'وكالة', other: 'أخرى' };
+  var planLabels = { starter: 'Starter', growth: 'Growth', enterprise: 'Enterprise' };
+
+  // Add to partners
+  partners.push({
+    name: fname + ' — ' + (typeLabels[type] || type),
+    slug: slug,
+    type: type,
+    typeLabel: typeLabels[type] || type,
+    plan: plan,
+    planLabel: planLabels[plan] || plan,
+    convs: 0, leads: 0, completion: 0, status: 'active'
+  });
+
+  // Show success
+  var link = 'https://wa.me/' + WA_NUMBER.replace('+','') + '?text=start_' + slug;
+  document.getElementById('success-name').textContent = fname;
+  document.getElementById('success-link').textContent = link;
+  document.getElementById('success-keyword').textContent = 'start_' + slug;
+  document.getElementById('success-plan').textContent = planLabels[plan];
+  document.getElementById('success-type').textContent = typeLabels[type] || type;
+
+  showScreen('success');
+}
+
+function doLogin() {
+  var email = document.getElementById('l-email').value.trim();
+  var pass = document.getElementById('l-pass').value;
+  if (!email || !pass) { alert('يرجى ملء الحقول'); return; }
+  showScreen('admin');
+}
+
+// ═══════════════════════════════
+// ADMIN TABS
+// ═══════════════════════════════
+var titles = { overview: 'نظرة عامة', partners: 'الشركاء', analytics: 'التحليلات', settings: 'الإعدادات' };
+
+function adminTab(tab, btn) {
+  ['overview','partners','analytics','settings'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.admin-nav-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('admin-title').textContent = titles[tab];
+  if (tab === 'partners' || tab === 'analytics') renderAll();
+}
+
+// ═══════════════════════════════
+// RENDER
+// ═══════════════════════════════
+function renderAll() {
+  renderActivity();
+  renderPartnersTable();
+  renderAnalyticsTable();
+  updateStats();
+}
+
+function updateStats() {
+  document.getElementById('stat-partners').textContent = partners.length;
+  var rev = partners.reduce(function(s,p){
+    return s + (p.plan==='growth'?299:p.plan==='enterprise'?799:99);
+  }, 0);
+  document.getElementById('stat-revenue').textContent = '$' + rev.toLocaleString();
+}
+
+function renderActivity() {
+  var html = '';
+  activities.forEach(function(a) {
+    html += '<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">' +
+      '<span style="font-size:16px;flex-shrink:0;">' + a.icon + '</span>' +
+      '<div><div style="font-size:13px;">' + a.text + '</div>' +
+      '<div style="font-size:11px;color:var(--dim);margin-top:3px;font-family:var(--mono);">' + a.time + '</div></div></div>';
+  });
+  document.getElementById('activity-feed').innerHTML = html;
+}
+
+function renderPartnersTable() {
+  var html = '';
+  partners.forEach(function(p, i) {
+    var link = 'start_' + p.slug;
+    var badgeClass = p.status === 'active' ? 'badge-green' : 'badge-orange';
+    var badgeText = p.status === 'active' ? '● نشط' : '● تجربة';
+    var planClass = p.plan === 'growth' ? 'badge-green' : p.plan === 'enterprise' ? 'badge-blue' : 'badge-gray';
+    html += '<tr>' +
+      '<td><b>' + p.name + '</b></td>' +
+      '<td><span class="badge badge-blue">' + p.typeLabel + '</span></td>' +
+      '<td><span class="partner-link">' + link + '</span></td>' +
+      '<td><span class="badge ' + planClass + '">' + p.planLabel + '</span></td>' +
+      '<td><span class="badge ' + badgeClass + '">' + badgeText + '</span></td>' +
+      '<td><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px;" onclick="deletePartner(' + i + ')">حذف</button></td>' +
+      '</tr>';
+  });
+  document.getElementById('partners-table').innerHTML = html;
+}
+
+function renderAnalyticsTable() {
+  var html = '';
+  partners.forEach(function(p) {
+    html += '<tr>' +
+      '<td><b>' + p.name + '</b></td>' +
+      '<td style="font-family:var(--mono);font-weight:700;">' + p.convs.toLocaleString() + '</td>' +
+      '<td style="font-family:var(--mono);font-weight:700;">' + p.leads + '</td>' +
+      '<td><span class="badge ' + (p.completion>60?'badge-green':'badge-orange') + '">' + p.completion + '%</span></td>' +
+      '</tr>';
+  });
+  document.getElementById('analytics-table').innerHTML = html;
+}
+
+// ═══════════════════════════════
+// MODAL
+// ═══════════════════════════════
+function openModal() {
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+function addPartner() {
+  var name = document.getElementById('m-name').value.trim();
+  var slug = document.getElementById('m-slug').value.trim().replace(/\s/g,'_');
+  var type = document.getElementById('m-type').value;
+  var plan = document.getElementById('m-plan').value;
+  var typeLabels = { insurance:'تأمين', lab:'مختبر', rental:'سيارات', realestate:'عقارات', other:'أخرى' };
+  var planLabels = { starter:'Starter', growth:'Growth', enterprise:'Enterprise' };
+
+  if (!name || !slug) { alert('يرجى ملء الاسم والـ Slug'); return; }
+
+  partners.push({
+    name, slug, type,
+    typeLabel: typeLabels[type] || type,
+    plan, planLabel: planLabels[plan] || plan,
+    convs: 0, leads: 0, completion: 0, status: 'active'
+  });
+
+  activities.unshift({ icon: '🟢', text: 'شريك جديد: <b>' + name + '</b> انضم للمنصة', time: 'الآن' });
+
+  closeModal();
+  renderAll();
+  adminTab('partners', document.querySelectorAll('.admin-nav-item')[1]);
+  showNotif('✅ تم إضافة الشريك: ' + name);
+
+  // Clear
+  document.getElementById('m-name').value = '';
+  document.getElementById('m-slug').value = '';
+}
+
+function deletePartner(i) {
+  if (!confirm('هل أنت متأكد من حذف هذا الشريك؟')) return;
+  partners.splice(i, 1);
+  renderAll();
+  showNotif('🗑️ تم حذف الشريك');
+}
+
+// ═══════════════════════════════
+// UTILS
+// ═══════════════════════════════
+function copyLink(id) {
+  var text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    showNotif('✅ تم النسخ!');
+  }).catch(function() {
+    showNotif('✅ تم النسخ!');
+  });
+}
+
+function showNotif(msg) {
+  var n = document.getElementById('notif');
+  n.textContent = msg;
+  n.classList.add('show');
+  setTimeout(function() { n.classList.remove('show'); }, 2500);
+}
+
+// Auto-generate slug from name
+document.addEventListener('DOMContentLoaded', function() {
+  var nameInput = document.getElementById('m-name');
+  var typeSelect = document.getElementById('m-type');
+  if (nameInput) {
+    nameInput.addEventListener('input', function() {
+      var slug = typeSelect.value + '_' + this.value.toLowerCase()
+        .replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+      document.getElementById('m-slug').value = slug;
+    });
+  }
+  renderAll();
+});
+</script>
+</body>
+</html>
